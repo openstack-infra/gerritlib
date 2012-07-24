@@ -34,7 +34,7 @@ setuptools.setup(
     version=version.canonical_version_string(always=True),
     author='Hewlett-Packard Development Company, L.P.',
     author_email='openstack@lists.launchpad.net',
-    description="Client library for OpenStack Nova API.",
+    description="Client library for accessing Gerrit.",
     license="Apache License, Version 2.0",
     url="https://github.com/openstack-ci/gerritlib",
     packages=setuptools.find_packages(exclude=['tests', 'tests.*']),
