@@ -107,6 +107,16 @@ class Gerrit(object):
     def getEvent(self):
         return self.event_queue.get()
 
+    def createProject(self, project):
+        cmd = 'gerrit create-project --name %s' % project
+        out, err = self._ssh(cmd)
+        return err
+
+    def listProjects(self):
+        cmd = 'gerrit ls-projects'
+        out, err = self._ssh(cmd)
+        return out.split('\n')
+
     def review(self, project, change, message, action={}):
         cmd = 'gerrit review --project %s' % project
         if message:
