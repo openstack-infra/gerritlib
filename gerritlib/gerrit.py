@@ -108,8 +108,19 @@ class Gerrit(object):
     def getEvent(self):
         return self.event_queue.get()
 
-    def createProject(self, project):
-        cmd = 'gerrit create-project --name %s' % project
+    def createGroup(self, group, visible_to_all=True):
+        cmd = 'gerrit create-group'
+        if visible_to_all:
+            cmd = '%s --visible-to-all' % cmd
+        cmd = '%s %s' % (cmd, group)
+        out, err = self._ssh(cmd)
+        return err
+
+    def createProject(self, project, require_change_id=True):
+        cmd = 'gerrit create-project --name'
+        if require_change_id:
+            cmd = '%s --require-change-id' % cmd
+        cmd = '%s %s' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
 
