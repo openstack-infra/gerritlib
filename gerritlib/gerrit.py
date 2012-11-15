@@ -117,10 +117,10 @@ class Gerrit(object):
         return err
 
     def createProject(self, project, require_change_id=True):
-        cmd = 'gerrit create-project --name'
+        cmd = 'gerrit create-project'
         if require_change_id:
             cmd = '%s --require-change-id' % cmd
-        cmd = '%s %s' % (cmd, project)
+        cmd = '%s --name %s' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
 
