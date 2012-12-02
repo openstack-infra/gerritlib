@@ -108,10 +108,12 @@ class Gerrit(object):
     def getEvent(self):
         return self.event_queue.get()
 
-    def createGroup(self, group, visible_to_all=True):
+    def createGroup(self, group, visible_to_all=True, owner=None):
         cmd = 'gerrit create-group'
         if visible_to_all:
             cmd = '%s --visible-to-all' % cmd
+        if owner:
+            cmd = '%s --owner %s' % (cmd, owner)
         cmd = '%s %s' % (cmd, group)
         out, err = self._ssh(cmd)
         return err
