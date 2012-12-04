@@ -160,22 +160,6 @@ class Gerrit(object):
                 pprint.pformat(data)))
         return data
 
-    def dbQuery(self, query):
-        cmd = 'gerrit gsql --format JSON -c "%s"' % query
-        out, err = self._ssh(cmd)
-        if not out:
-            return False
-        lines = out.strip().split('\n')
-        if not lines:
-            return False
-        data = map(json.loads, lines)
-        if not data:
-            return False
-        self.log.debug("Received %s rows from Gerrit DB query: \n%s" % (
-                # Subtract one for query states line.
-                (len(data) - 1), query))
-        return data
-
     def _ssh(self, command):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
