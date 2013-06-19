@@ -161,6 +161,26 @@ class Gerrit(object):
             pprint.pformat(data)))
         return data
 
+    def bulk_query(self, query):
+        cmd = 'gerrit query --format json %s"' % (
+            query)
+        out, err = self._ssh(cmd)
+        if not out:
+            return False
+        lines = out.split('\n')
+        if not lines:
+            return False
+
+        data = []
+        for line in lines:
+            if line:
+                data.append(json.loads(line))
+        if not data:
+            return False
+        self.log.debug("Received data from Gerrit query: \n%s" % (
+            pprint.pformat(data)))
+        return data
+
     def _ssh(self, command):
         client = paramiko.SSHClient()
         client.load_system_host_keys()
