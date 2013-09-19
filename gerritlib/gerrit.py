@@ -145,12 +145,19 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return err
 
-    def query(self, change, commit_msg=False):
+    def query(self, change, commit_msg=False, comments=False):
         if commit_msg:
-            cmd = 'gerrit query --format json --commit-message %s"' % (
-                  change)
+            if comments:
+                cmd = ('gerrit query --format json --commit-message --comments'
+                       ' %s"' % change)
+            else:
+                cmd = 'gerrit query --format json --commit-message %s"' % (
+                    change)
         else:
-            cmd = 'gerrit query --format json %s"' % (change)
+            if comments:
+                cmd = 'gerrit query --format json --comments %s"' % (change)
+            else:
+                cmd = 'gerrit query --format json %s"' % (change)
         out, err = self._ssh(cmd)
         if not out:
             return False
