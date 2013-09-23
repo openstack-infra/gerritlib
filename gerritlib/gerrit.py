@@ -133,7 +133,7 @@ class Gerrit(object):
         return out.split('\n')
 
     def review(self, project, change, message, action={}):
-        cmd = 'gerrit review --project %s' % project
+        cmd = 'gerrit review %s --project %s' % (change, project)
         if message:
             cmd += ' --message "%s"' % message
         for k, v in action.items():
@@ -141,7 +141,6 @@ class Gerrit(object):
                 cmd += ' --%s' % k
             else:
                 cmd += ' --%s %s' % (k, v)
-        cmd += ' %s' % change
         out, err = self._ssh(cmd)
         return err
 
