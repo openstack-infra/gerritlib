@@ -132,6 +132,11 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return out.split('\n')
 
+    def listGroups(self):
+        cmd = 'gerrit ls-groups'
+        out, err = self._ssh(cmd)
+        return out.split('\n')
+
     def review(self, project, change, message, action={}):
         cmd = 'gerrit review %s --project %s' % (change, project)
         if message:
