@@ -27,12 +27,21 @@ import paramiko
 class GerritWatcher(threading.Thread):
     log = logging.getLogger("gerrit.GerritWatcher")
 
-    def __init__(self, gerrit, username, hostname, port=29418, keyfile=None):
+    def __init__(
+            self, gerrit, username=None, hostname=None, port=None,
+            keyfile=None):
+        """Create a GerritWatcher.
+
+        :param gerrit: A Gerrit instance to pass events to.
+
+        All other parameters are optional and if not supplied are sourced from
+        the gerrit instance.
+        """
         threading.Thread.__init__(self)
-        self.username = username
-        self.keyfile = keyfile
-        self.hostname = hostname
-        self.port = port
+        self.username = username or gerrit.username
+        self.keyfile = keyfile or gerrit.keyfile
+        self.hostname = hostname or gerrit.hostname
+        self.port = port or gerrit.port
         self.gerrit = gerrit
 
     def _read(self, fd):
@@ -95,12 +104,7 @@ class Gerrit(object):
 
     def startWatching(self):
         self.event_queue = Queue.Queue()
-        self.watcher_thread = GerritWatcher(
-            self,
-            self.username,
-            self.hostname,
-            port=self.port,
-            keyfile=self.keyfile)
+        self.watcher_thread = GerritWatcher(self)
         self.watcher_thread.start()
 
     def addEvent(self, data):
