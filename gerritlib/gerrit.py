@@ -24,7 +24,7 @@ import time
 import paramiko
 
 
-class GerritWatcher(threading.Thread):
+class GerritWatcher(object):
     log = logging.getLogger("gerrit.GerritWatcher")
 
     def __init__(
@@ -37,7 +37,6 @@ class GerritWatcher(threading.Thread):
         All other parameters are optional and if not supplied are sourced from
         the gerrit instance.
         """
-        threading.Thread.__init__(self)
         self.username = username or gerrit.username
         self.keyfile = keyfile or gerrit.keyfile
         self.hostname = hostname or gerrit.hostname
@@ -104,7 +103,8 @@ class Gerrit(object):
 
     def startWatching(self):
         self.event_queue = Queue.Queue()
-        self.watcher_thread = GerritWatcher(self)
+        self.watcher_thread = threading.Thread(target=GerritWatcher(self).run)
+        self.watcher_thread.daemon = True
         self.watcher_thread.start()
 
     def addEvent(self, data):
