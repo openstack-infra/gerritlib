@@ -141,6 +141,11 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return out.split('\n')
 
+    def replicate(self, project='--all'):
+        cmd = 'gerrit replicate %s' % project
+        out, err = self._ssh(cmd)
+        return out.split('\n')
+
     def review(self, project, change, message, action={}):
         cmd = 'gerrit review %s --project %s' % (change, project)
         if message:
