@@ -166,9 +166,12 @@ class Gerrit(object):
         self.watcher_thread = None
         self.event_queue = None
 
-    def startWatching(self):
+    def startWatching(self, connection_attempts=-1, retry_delay=5):
         self.event_queue = Queue.Queue()
-        self.watcher_thread = threading.Thread(target=GerritWatcher(self).run)
+        watcher = GerritWatcher(self,
+                                connection_attempts=connection_attempts,
+                                retry_delay=retry_delay)
+        self.watcher_thread = threading.Thread(target=watcher.run)
         self.watcher_thread.daemon = True
         self.watcher_thread.start()
 
