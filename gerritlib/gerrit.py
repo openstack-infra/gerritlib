@@ -134,12 +134,12 @@ class Gerrit(object):
     def listProjects(self):
         cmd = 'gerrit ls-projects'
         out, err = self._ssh(cmd)
-        return out.split('\n')
+        return filter(None, out.split('\n'))
 
     def listGroups(self):
         cmd = 'gerrit ls-groups'
         out, err = self._ssh(cmd)
-        return out.split('\n')
+        return filter(None, out.split('\n'))
 
     def replicate(self, project='--all'):
         cmd = 'gerrit replicate %s' % project
