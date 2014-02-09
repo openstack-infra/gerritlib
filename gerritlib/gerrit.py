@@ -187,7 +187,7 @@ class Gerrit(object):
             cmd = '%s --visible-to-all' % cmd
         if owner:
             cmd = '%s --owner %s' % (cmd, owner)
-        cmd = '%s %s' % (cmd, group)
+        cmd = '%s "%s"' % (cmd, group)
         out, err = self._ssh(cmd)
         return err
 
