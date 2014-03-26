@@ -205,10 +205,12 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return err
 
-    def createProject(self, project, require_change_id=True):
+    def createProject(self, project, require_change_id=True, empty_repo=False):
         cmd = 'gerrit create-project'
         if require_change_id:
             cmd = '%s --require-change-id' % cmd
+        if empty_repo:
+            cmd = '%s --empty-commit' % cmd
         cmd = '%s --name %s' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
