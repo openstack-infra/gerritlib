@@ -179,6 +179,7 @@ class Gerrit(object):
         self.keyfile = keyfile
         self.watcher_thread = None
         self.event_queue = None
+        self.installed_plugins = None
 
     def startWatching(self, connection_attempts=-1, retry_delay=5):
         self.event_queue = Queue.Queue()
@@ -225,8 +226,32 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return filter(None, out.split('\n'))
 
+    def listPlugins(self):
+        plugins = self.getPlugins()
+        plugin_names = plugins.keys()
+        return plugin_names
+
+    # get installed plugins info returned is (name, version, status, file)
+    def getPlugins(self):
+        # command only available on gerrit verion >= 2.5
+        cmd = 'gerrit plugin ls --format json'
+        out, err = self._ssh(cmd)
+        return json.loads(out)
+
+    def getVersion(self):
+        # command only available on gerrit verion >= 2.6
+        cmd = 'gerrit version'
+        out, err = self._ssh(cmd)
+        out = out.split(' ')[2]
+        return out.strip('\n')
+
     def replicate(self, project='--all'):
-        cmd = 'gerrit replicate %s' % project
+        cmd = 'replication start %s' % project
+        if self.installed_plugins is None:
+            try:
+                self.installed_plugins = self.listPlugins()
+            except Exception:
+                cmd = 'gerrit replicate %s' % project
         out, err = self._ssh(cmd)
         return out.split('\n')
 
