@@ -6,6 +6,8 @@ build/*
 *.pyc
 gerritlib/versioninfo
 
+doc/build/*
+
 # pbr generates these
 AUTHORS
 ChangeLog
