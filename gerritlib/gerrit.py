@@ -16,8 +16,8 @@
 import json
 import logging
 import pprint
-import Queue
 import select
+import six.moves
 import threading
 import time
 
@@ -182,7 +182,7 @@ class Gerrit(object):
         self.installed_plugins = None
 
     def startWatching(self, connection_attempts=-1, retry_delay=5):
-        self.event_queue = Queue.Queue()
+        self.event_queue = six.moves.queue.Queue()
         watcher = GerritWatcher(self,
                                 connection_attempts=connection_attempts,
                                 retry_delay=retry_delay)
