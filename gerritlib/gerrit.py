@@ -221,8 +221,11 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return filter(None, out.split('\n'))
 
-    def listGroups(self):
-        cmd = 'gerrit ls-groups'
+    def listGroups(self, verbose=False):
+        if verbose:
+            cmd = 'gerrit ls-groups -v'
+        else:
+            cmd = 'gerrit ls-groups'
         out, err = self._ssh(cmd)
         return filter(None, out.split('\n'))
 
