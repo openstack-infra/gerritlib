@@ -29,6 +29,11 @@ CONSUMING = 'consuming'
 DEAD = 'dead'
 DISCONNECTED = 'disconnected'
 IDLE = 'idle'
+UPDATE_ALLOWED_KEYS = ['description', 'submit-type',
+                       'contributor-agreements', 'signed-off-by',
+                       'content-merge', 'change-id',
+                       'project-state',
+                       'max-object-size-limit']
 
 
 class GerritWatcher(threading.Thread):
@@ -206,18 +211,40 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return err
 
-    def createProject(self, project, require_change_id=True, empty_repo=False):
+    def createProject(self, project, require_change_id=True, empty_repo=False,
+                      description=None):
         cmd = 'gerrit create-project'
         if require_change_id:
             cmd = '%s --require-change-id' % cmd
         if empty_repo:
             cmd = '%s --empty-commit' % cmd
+        if description:
+            cmd = "%s --description \"%s\"" % \
+                  (cmd, description.replace('"', r'\"'))
         cmd = '%s --name %s' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
 
-    def listProjects(self):
+    def updateProject(self, project, update_key, update_value):
+        # check for valid keys
+        if update_key not in UPDATE_ALLOWED_KEYS:
+            raise Exception("Trying to update a non-valid key %s" % update_key)
+
+        cmd = 'gerrit set-project %s ' % project
+        if update_key == 'description':
+            cmd += "--%s \"%s\"" % (update_key,
+                                    update_value.replace('"', r'\"'))
+        else:
+            cmd += '--%s %s' % (update_key, update_value)
+        out, err = self._ssh(cmd)
+        return err
+
+    def listProjects(self, show_description=False):
         cmd = 'gerrit ls-projects'
+        if show_description:
+            # display projects alongs with descriptions
+            # separated by ' - ' sequence
+            cmd += ' --description'
         out, err = self._ssh(cmd)
         return filter(None, out.split('\n'))
 
