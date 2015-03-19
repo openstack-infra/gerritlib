@@ -1,16 +1,15 @@
-Welcome to gerritlib's documentation!
-========================================================
+Gerritlib
+=========
 
-Contents:
+.. include:: ../../README.rst
 
+Contents
+========
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
+   :glob:
 
-   readme
-   api
-   installation
-   usage
-   contributing
+   *
 
 Indices and tables
 ==================
