@@ -221,7 +221,7 @@ class Gerrit(object):
         if description:
             cmd = "%s --description \"%s\"" % \
                   (cmd, description.replace('"', r'\"'))
-        cmd = '%s --name %s' % (cmd, project)
+        cmd = '%s --name "%s"' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
 
