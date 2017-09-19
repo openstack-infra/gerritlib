@@ -221,7 +221,16 @@ class Gerrit(object):
         if description:
             cmd = "%s --description \"%s\"" % \
                   (cmd, description.replace('"', r'\"'))
-        cmd = '%s "%s"' % (cmd, project)
+        version = None
+        try:
+            version = self.parseGerritVersion(self.getVersion())
+        except Exception:
+            # If no version then we know version is old and should use --name
+            pass
+        if not version or version < (2, 12):
+            cmd = '%s --name "%s"' % (cmd, project)
+        else:
+            cmd = '%s "%s"' % (cmd, project)
         out, err = self._ssh(cmd)
         return err
 
@@ -274,6 +283,19 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         out = out.split(' ')[2]
         return out.strip('\n')
+
+    def parseGerritVersion(self, version):
+        # Adapted from gertty setRemoteVersion()
+        base = version.split('-')[0]
+        parts = base.split('.')
+        major = minor = micro = 0
+        if len(parts) > 0:
+            major = int(parts[0])
+        if len(parts) > 1:
+            minor = int(parts[1])
+        if len(parts) > 2:
+            micro = int(parts[2])
+        return (major, minor, micro)
 
     def replicate(self, project='--all'):
         cmd = 'replication start %s' % project
