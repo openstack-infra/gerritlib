@@ -211,6 +211,36 @@ class Gerrit(object):
         out, err = self._ssh(cmd)
         return err
 
+    def listMembers(self, group, recursive=False):
+        cmd = 'gerrit ls-members'
+        if recursive:
+            cmd = '%s --recursive' % cmd
+        cmd = '%s "%s"' % (cmd, group)
+        out, err = self._ssh(cmd)
+        ret = []
+        rows = out.split('\n')
+        if len(rows) > 1:
+            keys = rows[0].split('\t')
+            for row in rows[1:]:
+                ret.append(dict(zip(keys, row.split('\t'))))
+        return ret
+
+    def _setMember(self, verb, group, member):
+        cmd = 'gerrit set-members'
+        if verb == 'add':
+            cmd = '%s --add "%s"' % (cmd, member)
+        elif verb == 'remove':
+            cmd = '%s --remove "%s"' % (cmd, member)
+        cmd = '%s "%s"' % (cmd, group)
+        out, err = self._ssh(cmd)
+        return err
+
+    def addMember(self, group, member):
+        self._setMember('add', group, member)
+
+    def removeMember(self, group, member):
+        self._setMember('remove', group, member)
+
     def createProject(self, project, require_change_id=True, empty_repo=False,
                       description=None):
         cmd = 'gerrit create-project'
