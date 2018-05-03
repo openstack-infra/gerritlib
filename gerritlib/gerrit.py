@@ -396,25 +396,29 @@ class Gerrit(object):
         return data
 
     def _ssh(self, command):
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.set_missing_host_key_policy(paramiko.WarningPolicy())
-        client.connect(self.hostname,
-                       username=self.username,
-                       port=self.port,
-                       key_filename=self.keyfile)
+        try:
+            client = paramiko.SSHClient()
+            client.load_system_host_keys()
+            client.set_missing_host_key_policy(paramiko.WarningPolicy())
+            client.connect(self.hostname,
+                           username=self.username,
+                           port=self.port,
+                           key_filename=self.keyfile)
 
-        self.log.debug("SSH command:\n%s" % command)
-        stdin, stdout, stderr = client.exec_command(command)
+            self.log.debug("SSH command:\n%s" % command)
+            stdin, stdout, stderr = client.exec_command(command)
 
-        out = stdout.read()
-        self.log.debug("SSH received stdout:\n%s" % out)
+            out = stdout.read()
+            self.log.debug("SSH received stdout:\n%s" % out)
 
-        ret = stdout.channel.recv_exit_status()
-        self.log.debug("SSH exit status: %s" % ret)
+            ret = stdout.channel.recv_exit_status()
+            self.log.debug("SSH exit status: %s" % ret)
 
-        err = stderr.read()
-        self.log.debug("SSH received stderr:\n%s" % err)
+            err = stderr.read()
+            self.log.debug("SSH received stderr:\n%s" % err)
+        finally:
+            if client:
+                client.close()
         if ret:
             raise Exception("Gerrit error executing %s" % command)
         return (out, err)
