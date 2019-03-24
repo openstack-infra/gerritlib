@@ -25,7 +25,7 @@ To browse the latest code:
 
 To clone the latest code:
 
-   git clone git://git.openstack.org/openstack-infra/gerritlib
+   git clone https://git.openstack.org/openstack-infra/gerritlib
 
 Code reviews are handled by gerrit:
    http://review.openstack.org
